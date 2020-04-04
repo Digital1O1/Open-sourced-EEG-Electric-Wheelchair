@@ -1,0 +1,1218 @@
+#include <iostream>
+#include <map>
+#include <sstream>
+#include <cassert>
+#include <stdexcept>
+#include <cstdlib>
+#include <stdio.h>
+#include <conio.h>
+#include <sstream>
+#include <map>
+#include <iomanip>
+#include <thread>
+#include <string>
+#include <fstream>
+#include <chrono>
+
+#include "IEmoStateDLL.h"
+#include "Iedk.h"
+#include "IedkErrorCode.h"
+#include "SerialPort.h"
+#include "MentalCommandControl.h"
+#include "EmotivCloudClient.h"
+
+using namespace std;
+
+int neutral_counter,push_counter, pull_counter, left_counter,
+	right_counter, state = 0;
+
+EmoEngineEventHandle eEvent = IEE_EmoEngineEventCreate();
+EmoStateHandle eState = IEE_EmoStateCreate();
+
+unsigned int userID = 0;
+typedef unsigned long ulong;
+
+//Emotiv Login Information
+const std::string userName = "c.ta";
+const std::string password = "IamThe5478";
+const std::string profileName = "Profile_1222";
+int userCloudID = -1;
+
+//Data Logging Variables
+ofstream ofs,myfile;
+IEE_MentalCommandAction_t mentalCommandList[] = { MC_LEFT , MC_RIGHT , MC_PUSH, MC_PULL };
+IEE_DataChannel_t channelList[] = { IED_AF3, IED_AF4, IED_T7, IED_T8, IED_Pz };
+double alpha, low_beta, high_beta, gamma, theta = 0;
+const int SIZE_ = 5;
+double alphaArray[SIZE_], thetaArray[SIZE_], gammaArray[SIZE_], low_betaArray[SIZE_], high_betaArray[SIZE_];
+double mean_alpha, mean_theta, mean_gamma, mean_low_beta, mean_high_beta = 0;
+
+// =========================================================================================[ [ SERIAL COMM VARIABLES ] ========================================================================================= //
+
+//-----------------Wrtie Variables-----------------//
+
+HANDLE hComm;							// Handle to the Serial port
+char   ComPortName[] = "\\\\.\\COM21";	// Name of the Serial port(May Change) to be opened,
+BOOL   Status;							// Status of the various operations
+DWORD  dwEventMask;						// Event mask to trigger
+
+//-----------------Read Variables-----------------//
+
+char  TempChar;							// Temperory Character
+char  SerialBuffer[256];				// Buffer Containing Rxed Data
+DWORD NoBytesRead;                      // Bytes read by ReadFile()
+int i = 0;
+
+//----------------------------- Writing a Character to Serial Port ----------------------------------------//
+
+DWORD  dNoOFBytestoWrite;				// No of bytes to write into the port
+DWORD  dNoOfBytesWritten = 0;			// No of bytes written to the port
+
+// =========================================================================================[ FUNCTIONS ] ========================================================================================= //
+bool gatherData(int training_counter, char key)
+{
+	bool timeflag = true;
+	double time = 7.7;
+	//auto Start = time_point;
+	//The string variable is what's needed for the open function
+	string s;
+
+	//This will hold the various names of the file
+	stringstream out;
+
+	//Writes the number of iteration to stringstream
+	out << training_counter;
+
+	//The ".str()"  is needed because of the "old" style string | the open() function only takes a char* | In C++11 the open() takes std::string
+	s = out.str();
+
+	//s += "_Pull.csv";
+	switch (key)
+	{
+
+		//Down
+	case '2':
+	{
+		s += "_Pull.csv";
+		printf("  Writing PULL \n ");
+		myfile.open(s.c_str());
+		myfile << "Time" << "," << "Theta" << "," << " Alpha" << "," << " Low_beta" << "," << "High_Beta" << "," << "Gamma" << endl << endl;
+		break;
+	}
+
+	//Up
+	case '8':
+	{
+		s += "_Push.csv";
+		printf("  Writing PUSH \n ");
+		myfile.open(s.c_str());
+		myfile << "Time" << "," << "Theta" << "," << " Alpha" << "," << " Low_beta" << "," << "High_Beta" << "," << "Gamma" << endl << endl;
+		break;
+	}
+
+	//Neutral
+	case '5':
+	{
+		s += "_Neutral.csv";
+		printf("  Writing NEUTRAL \n ");
+		myfile.open(s.c_str());
+		myfile << "Time" << "," << "Theta" << "," << " Alpha" << "," << " Low_beta" << "," << "High_Beta" << "," << "Gamma" << endl << endl;
+		break;
+	}
+
+	//Left
+	case '4':
+	{
+		s += "_Left.csv";
+		printf("  Writing LEFT \n ");
+		myfile.open(s.c_str());
+		myfile << "Time" << "," << "Theta" << "," << " Alpha" << "," << " Low_beta" << "," << "High_Beta" << "," << "Gamma" << endl << endl;
+		break;
+	}
+
+	//Right
+	case '6':
+	{
+		s += "_Right.csv";
+		printf("  Writing RIGHT \n ");
+		myfile.open(s.c_str());
+		myfile << "Time" << "," << "Theta" << "," << " Alpha" << "," << " Low_beta" << "," << "High_Beta" << "," << "Gamma" << endl << endl;
+		break;
+	}
+
+
+	}
+
+	auto Start = std::chrono::high_resolution_clock::now();
+
+	for (int i = 0; i < sizeof(channelList) / sizeof(channelList[0]); ++i)
+	{
+		while (timeflag)
+		{
+			IEE_GetAverageBandPowers(userID, channelList[i], &theta, &alpha, &low_beta, &high_beta, &gamma);
+
+			auto End = std::chrono::high_resolution_clock::now();
+			chrono::duration<double, std::milli> Elapsed = End - Start;
+
+			//Data to be written here
+			IEE_EmoEngineEventGetEmoState(eEvent, eState);
+
+			//Prints out data to the screen
+			cout << "  Time : " << Elapsed.count() / 1000 << setw(2)
+				<< " Alpha : " << alpha << setw(2) << " Low Beta : " << low_beta
+				<< setw(2) << " High Beta : " << high_beta << setw(2) << " Gamma : "
+				<< gamma << setw(2) << " Theta : " << theta << endl;
+
+			//Writes the actual values to the CSV file
+			myfile << Elapsed.count() / 1000 << "," << alpha << "," << low_beta << "," << high_beta << "," << gamma << "," << theta << endl;
+
+			Sleep(115);
+			if (Elapsed.count() >= (time * 1000))
+			{
+				//cout << endl << "Sampling [ COMPLETE ]" << endl;
+				printf("  Sampling [ COMPLETE ] \n ");
+
+				//Closes the file
+				myfile.close();
+
+				return false;
+			}
+		}
+	}
+
+
+
+	return true;
+}
+
+void printValues(IEE_MentalCommandAction_t actionType, float actionPower)
+{
+	if ((static_cast<int>(actionType) > 1) && (static_cast<int>(actionPower * 100.0f) > 0))
+	{
+		std::cout << static_cast<int>(actionType) << "," << static_cast<int>(actionPower * 100.0f) << std::endl;
+	}
+}
+
+void SavingLoadingFunction(int userCloudID, bool save = true)
+{
+	printf("  In progress... \n");
+	int getNumberProfile = EC_GetAllProfileName(userCloudID);
+	// Save profile to cloud
+	if (save) 
+	{   
+		int profileID = -1;
+
+		EC_GetProfileId(userCloudID, profileName.c_str(), &profileID);
+
+		if (profileID >= 0) 
+		{
+			//printf("  Profile : [ %s ] already exists... \n",profileName.c_str());
+			//cout << "userCloudID : " << userCloudID << " userID : " << userID << " ProfileID: " << profileID << endl;
+			if (EC_UpdateUserProfile(userCloudID, userID, profileID) == EDK_OK)
+			{
+				//cout << "userCloudID : " << userCloudID << " userID : " << userID << " ProfileID: " << profileID << endl;
+
+				printf("  Updating finished \n");
+			}
+			else
+			{
+				//cout << "userCloudID : " << userCloudID << " userID : " << userID << " ProfileID: " << profileID << endl;
+
+				printf("  Updating failed \n");
+			}
+		}
+
+		else if (EC_SaveUserProfile(userCloudID, userID, profileName.c_str(), TRAINING) == EDK_OK)
+		{
+			printf("  Saving finished \n");
+		}
+
+		else
+		{
+			printf("  Saving failed \n");
+		}
+		return;
+	}
+	
+	// Load profile from cloud
+	else
+	{
+		if (getNumberProfile > 0) 
+		{
+			if (EC_LoadUserProfile(userCloudID, userID, EC_ProfileIDAtIndex(userCloudID, 0)) == EDK_OK)
+			{
+				printf("  Loading finished \n");
+			}
+			else
+			{
+				printf("  Loading failed \n");
+
+			}
+		}
+		return;
+	}
+}
+
+void menu()
+{
+	printf("  =========================================================================\n");
+	printf("  ========[ ALL MENTAL COMMANDS MUST BE TRAINED TO GET AN OUTPUT ]=========\n\n");
+
+	printf("  Press [ 0 ] to pull up MENU \n");
+	printf("  Press [ 1 ] to activate training session \n");
+	printf("  Press [ 2 ] to train DOWN \n");
+	printf("  Press [ 3 ] to reject the last command trained \n");
+	printf("  Press [ 4 ] to train LEFT \n");
+	printf("  Press [ 5 ] to train NEUTRAL \n");
+	printf("  Press [ 6 ] to train RIGHT \n");
+	printf("  Press [ 7 ] to erase training data for an action \n");
+	printf("  Press [ 8 ] to train UP \n");
+	printf("  Press [ 9 ] to reset the last command trained \n");
+
+	printf("  =========================================================================\n\n");
+
+	printf("  Press [ ESC ] to send EEG signals to Arduino \n");
+	printf("  Press [ ` ] to pull up QUIT \n");
+	printf("  Press [ / ] to display training counters \n");
+	printf("  Press [ * ] to Set the sensitivity of MentalCommand actions (Min : 1 || Max : 10) \n");
+	printf("  Press [ - ] to set MentalCommand Activation level \n");
+	printf("  Press [ + ] Save profile to Emotiv Cloud \n");
+	printf("  Press [ . ] Load profile to Emotiv Cloud \n");
+	printf("  Press [ d ] to delete profile from Emotiv Cloud \n");
+
+	printf("  =========================================================================\n\n");
+
+}
+
+static bool handleUserInput()
+{
+	int left_sensivity = 0; int right_sensivity = 0; int push_sensivity = 0; int pull_sensivity = 0;
+	int* set_left = 0; int* set_right = 0; int* set_push = 0; int* set_pull = 0;
+	float* skill = 0;
+
+	int* mc_Sensivity = 0;
+	static string inputBuffer;
+	char key = _getch();
+	printf("  [ %c ] pressed \n\n", key);
+
+	switch (key)
+	{
+	case '1':
+	{
+		///*
+		int getNumberProfile = EC_GetAllProfileName(userCloudID);
+		printf("  Numer of Profiles on cloud account :  [ %i ] \n", getNumberProfile);
+		printf("  Profile Index :  [ %i ] \n", EC_ProfileIDAtIndex(userCloudID, 0));
+		//Show Profile Index with each profile made
+
+
+		int profileOK = false;
+
+		int profileID = -1;
+		EC_GetProfileId(userCloudID, profileName.c_str(), &profileID);
+		//cout << "Profile ID :" << profileID << endl;
+
+		if (profileID >= 0)
+		{
+			if (EC_LoadUserProfile(userCloudID, userID, profileID) == EDK_OK)
+			{
+				printf("  Profile loaded \n");
+				profileOK = true;
+			}
+			else
+			{
+				printf("  Can't load profile \n");
+			}
+		}
+		if (profileOK == false)
+		{
+			if (EC_SaveUserProfile(userCloudID, userID, profileName.c_str(), TRAINING) == EDK_OK)
+			{
+				printf("  Saving finished \n");
+			}
+			else
+			{
+				printf("  Saving failed \n");
+			}
+		}
+		//*/
+
+		ulong push = (ulong)IEE_MentalCommandAction_t::MC_PUSH;
+		ulong pull = (ulong)IEE_MentalCommandAction_t::MC_PULL;
+		ulong left = (ulong)IEE_MentalCommandAction_t::MC_LEFT;
+		ulong right = (ulong)IEE_MentalCommandAction_t::MC_RIGHT;
+		ulong listAction = push | pull | left | right;
+		//	ulong listAction = push | pull;
+		int errorCode = IEE_MentalCommandSetActiveActions(userID, listAction);
+
+		if (IEE_MentalCommandSetActiveActions(userID, listAction) == EDK_OK)
+		{
+			printf("  MentalCommands [ UP | DOWN | LEFT | RIGHT ] are now ACTIVE for user [ %i ] \n\n", userID);
+			//printf("  MentalCommands [ UP | DOWN ] are now ACTIVE for user [ %i ] \n\n", userID);
+		}
+		else
+		{
+			printf("  ERROR : [ %d ] has occured...", errorCode);
+		}
+
+	}
+	break;
+
+	case '2':
+	{	//bool gatherData(int training_counter, char key)
+
+		/* Original Code */
+		/*
+		printf("  Starting training [ DOWN ] \n ");
+		IEE_MentalCommandSetTrainingAction(userID, MC_PULL);
+		IEE_MentalCommandSetTrainingControl(userID, MC_START);
+		++pull_counter;
+		printf(" DOWN trained [ %d ] of times \n ", pull_counter);
+		*/
+
+		printf("  Starting training [ DOWN ] \n ");
+		Sleep(700);
+		IEE_MentalCommandSetTrainingAction(userID, MC_PULL);
+		printf(" Training STARTED user [ %d ]  \n\n", userID);
+		++pull_counter;
+
+		thread train(IEE_MentalCommandSetTrainingControl, userID, MC_START);
+		thread data(gatherData, ref(pull_counter), key);
+
+		/*
+			If both join() functions aren't called it'll crash.
+			This is because at the end of the function, the thread will go out of scope and the thread distructor is called
+			Inside teh destructor a check is done to see if the thread is joinable, and if it is, std::terminate is called
+
+			Reference Link: https://www.acodersjourney.com/top-20-cplusplus-multithreading-mistakes/
+		*/
+		data.join();
+		train.join();
+		break;
+	}
+
+
+	case '3':
+	{
+		IEE_MentalCommandSetTrainingControl(userID, MC_REJECT);
+		printf("  Last trained Mental Command REJECTED \n ");
+		break;
+	}
+	case '4':
+	{
+		/*
+		printf("  Starting training [ LEFT ] \n ");
+		IEE_MentalCommandSetTrainingAction(userID, MC_LEFT);
+		IEE_MentalCommandSetTrainingControl(userID, MC_START);
+		++left_counter;
+		printf(" LEFT trained [ %d ] of times \n ", left_counter);
+		*/
+
+		printf("  Starting training [ LEFT ] \n ");
+		Sleep(700);
+		IEE_MentalCommandSetTrainingAction(userID, MC_LEFT);
+		printf(" Training STARTED user [ %d ]  \n\n", userID);
+		++left_counter;
+		printf(" LEFT trained [ %d ] of times \n ", left_counter);
+
+		thread train(IEE_MentalCommandSetTrainingControl, userID, MC_START);
+		thread data(gatherData, ref(left_counter), key);
+
+		data.join();
+		train.join();
+		break;
+	}
+
+
+	case '5':
+	{
+		/*
+		printf("  Starting training [ NEUTRAL ] \n ");
+		IEE_MentalCommandSetTrainingAction(userID, MC_NEUTRAL);
+		IEE_MentalCommandSetTrainingControl(userID, MC_START);
+
+		++neutral_counter;
+		printf(" NEUTRAL trained [ %d ] of times \n ", neutral_counter);
+		break;
+		*/
+		printf("  Starting training [ NEUTRAL ] \n ");
+		Sleep(700);
+		IEE_MentalCommandSetTrainingAction(userID, MC_NEUTRAL);
+		++neutral_counter;
+		printf(" NEUTRAL trained [ %d ] of times \n ", neutral_counter);
+
+		thread train(IEE_MentalCommandSetTrainingControl, userID, MC_START);
+		thread data(gatherData, ref(left_counter), key);
+
+		data.join();
+		train.join();
+		break;
+	}
+	case '6':
+	{
+		/*
+		printf("  Starting training [ RIGHT ] \n ");
+		IEE_MentalCommandSetTrainingAction(userID, MC_RIGHT);
+		IEE_MentalCommandSetTrainingControl(userID, MC_START);
+		++right_counter;
+		printf(" RIGHT trained [ %d ] of times \n ", right_counter);
+		*/
+
+		printf("  Starting training [ RIGHT ] \n ");
+		Sleep(700);
+		IEE_MentalCommandSetTrainingAction(userID, MC_RIGHT);
+		++right_counter;
+		printf(" RIGHT trained [ %d ] of times \n ", right_counter);
+
+		thread train(IEE_MentalCommandSetTrainingControl, userID, MC_START);
+		thread data(gatherData, ref(left_counter), key);
+
+		data.join();
+		train.join();
+		break;
+	}
+
+
+	case '7':
+
+		printf("  Last trained Mental Command ERASED \n ");
+		IEE_MentalCommandSetTrainingControl(userID, MC_ERASE);
+
+		break;
+
+	case '8':
+
+		printf("  Starting training [ UP ] \n ");
+		IEE_MentalCommandSetTrainingAction(userID, MC_PUSH);
+		IEE_MentalCommandSetTrainingControl(userID, MC_START);
+
+		++push_counter;
+		printf(" UP trained [ %d ] of times \n ", push_counter);
+		break;
+
+	case '9':
+
+		printf("  Current training RESET \n ");
+		IEE_MentalCommandSetTrainingControl(userID, MC_RESET);
+
+		break;
+		// =================================================================================== [ Misc Commands ] =================================================================================== //
+
+	// Pulls up training counter
+	case '/':
+
+		printf("  UP trained     [ %d ] of times \n ", push_counter);
+		printf(" LEFT trained    [ %d ] of times \n ", left_counter);
+		printf(" RIGHT trained   [ %d ] of times \n ", right_counter);
+		printf(" NEUTRAL trained [ %d ] of times \n ", neutral_counter);
+		printf(" DOWN trained    [ %d ] of times \n ", pull_counter);
+		break;
+
+		// Pulls up menu
+	case '0':
+		menu();
+		break;
+
+		// Quits the program the tilde key
+	case '`':
+		return false;
+		break;
+
+	case '*':
+
+		printf("  Set sensitivity for | Left | Right | Up | Down | then press ENTER : ");
+		scanf_s("%i%i%i%i", &left_sensivity, &right_sensivity, &push_sensivity, &pull_sensivity);
+
+		if (IEE_MentalCommandSetActionSensitivity(userID, left_sensivity, right_sensivity, push_sensivity, pull_sensivity) == EDK_OK)
+		{
+			printf("\n  LEFT Sensivity  [ %d ] \n  RIGHT Sensivity [ %d ] \n  PUSH Sensivity  [ %d ] \n  PULL Sensivity  [ %d ] \n\n", left_sensivity, right_sensivity, push_sensivity, pull_sensivity);
+		}
+		else
+		{
+			printf("  ERROR IEE_MentalCommandSetActionSensitivity \n");
+		}
+		break;
+
+	case '+':
+		printf("  Saving Profile ...  \n");
+		SavingLoadingFunction(userCloudID, true);
+
+		break;
+
+	case '.':
+		printf("  Loading Profile ... \n");
+		SavingLoadingFunction(userCloudID, false);
+
+		break;
+
+	case '-':
+	{
+		int level = 0;
+
+		cout << "Set activation level : ";
+		cin >> level;
+		if (IEE_MentalCommandSetActivationLevel(userID, level) == EDK_OK)
+		{
+			IEE_MentalCommandGetActivationLevel(userID, &level);
+			std::cout << "Set MentalCommand Activation level to " << level << std::endl;
+		}
+		else
+		{
+			std::cout << "Set MentalCommand Activation level failured " << level << std::endl;
+		}
+	}
+	break;
+
+	case 'd':
+	{
+		int numberOfProfiles = EC_GetAllProfileName(userCloudID);
+
+		cout << "Number of profile(s) found on cloud account : " << numberOfProfiles << endl;
+
+		for (int i = 0; i < numberOfProfiles; i++)
+		{
+			cout << "Profile ID : " << EC_ProfileIDAtIndex(userCloudID, i) << " at Index : " << i << endl;
+		}
+
+		int delete_Index = 0;
+
+		cout << "Type in Profile Index to delete profile : ";
+		cin >> delete_Index;
+		if (EC_DeleteUserProfile(userCloudID, EC_ProfileIDAtIndex(userCloudID, delete_Index)) == EDK_OK)
+		{
+			cout << "Profile : " << EC_ProfileIDAtIndex(userCloudID, delete_Index) << " DELETED " << endl;
+		}
+		else
+		{
+			cout << "ERROR EC_DeleteUserProfile" << endl;
+		}
+
+	}
+	break;
+
+	default:
+		break;
+	}
+	return true;
+}
+//ORIGINAL HANDLEUSERINPUT()
+/*
+static bool handleUserInput()
+{
+	int left_sensivity = 0; int right_sensivity = 0; int push_sensivity = 0; int pull_sensivity = 0;
+	int* set_left = 0; int* set_right = 0; int* set_push = 0; int* set_pull = 0;
+	float* skill = 0;
+
+	int* mc_Sensivity = 0;
+	static string inputBuffer;
+	char key = _getch();
+	printf("  [ %c ] pressed \n\n", key);
+
+	switch (key)
+	{
+	case '1':
+	{
+		///*
+		int getNumberProfile = EC_GetAllProfileName(userCloudID);
+		printf("  Numer of Profiles on cloud account :  [ %i ] \n", getNumberProfile);
+		printf("  Profile Index :  [ %i ] \n", EC_ProfileIDAtIndex(userCloudID, 0));
+		//Show Profile Index with each profile made
+
+
+		int profileOK = false;
+
+		int profileID = -1;
+		EC_GetProfileId(userCloudID, profileName.c_str(), &profileID);
+		//cout << "Profile ID :" << profileID << endl;
+
+		if (profileID >= 0)
+		{
+			if (EC_LoadUserProfile(userCloudID, userID, profileID) == EDK_OK)
+			{
+				printf("  Profile loaded \n");
+				profileOK = true;
+			}
+			else
+			{
+				printf("  Can't load profile \n");
+			}
+		}
+		if (profileOK == false)
+		{
+			if (EC_SaveUserProfile(userCloudID, userID, profileName.c_str(), TRAINING) == EDK_OK)
+			{
+				printf("  Saving finished \n");
+			}
+			else
+			{
+				printf("  Saving failed \n");
+			}
+		}
+	
+
+		ulong push = (ulong)IEE_MentalCommandAction_t::MC_PUSH;
+		ulong pull = (ulong)IEE_MentalCommandAction_t::MC_PULL;
+		ulong left = (ulong)IEE_MentalCommandAction_t::MC_LEFT;
+		ulong right = (ulong)IEE_MentalCommandAction_t::MC_RIGHT;
+		ulong listAction = push | pull | left | right;
+	//	ulong listAction = push | pull;
+		int errorCode = IEE_MentalCommandSetActiveActions(userID, listAction);
+
+		if (IEE_MentalCommandSetActiveActions(userID, listAction) == EDK_OK)
+		{
+			printf("  MentalCommands [ UP | DOWN | LEFT | RIGHT ] are now ACTIVE for user [ %i ] \n\n", userID);
+			//printf("  MentalCommands [ UP | DOWN ] are now ACTIVE for user [ %i ] \n\n", userID);
+		}
+		else
+		{
+			printf("  ERROR : [ %d ] has occured...", errorCode);
+		}
+
+	}
+	break;
+
+	case '2':
+	{
+		printf("  Starting training [ DOWN ] \n ");
+		IEE_MentalCommandSetTrainingAction(userID, MC_PULL);
+		IEE_MentalCommandSetTrainingControl(userID, MC_START);
+		++pull_counter;
+		printf(" DOWN trained [ %d ] of times \n ", pull_counter);
+	}
+		break;
+
+	case '3':
+	{
+		IEE_MentalCommandSetTrainingControl(userID, MC_REJECT);
+		printf("  Last trained Mental Command REJECTED \n ");
+		break;
+	}
+	case '4':
+	{
+		printf("  Starting training [ LEFT ] \n ");
+		IEE_MentalCommandSetTrainingAction(userID, MC_LEFT);
+		IEE_MentalCommandSetTrainingControl(userID, MC_START);
+		++left_counter;
+		printf(" LEFT trained [ %d ] of times \n ", left_counter);
+ 	}
+		break;
+
+	case '5':
+		printf("  Starting training [ NEUTRAL ] \n ");
+
+		IEE_MentalCommandSetTrainingAction(userID, MC_NEUTRAL);
+		IEE_MentalCommandSetTrainingControl(userID, MC_START);
+
+		++neutral_counter;
+		printf(" NEUTRAL trained [ %d ] of times \n ", neutral_counter);
+		break;
+
+	case '6':
+	{
+		printf("  Starting training [ RIGHT ] \n ");
+		IEE_MentalCommandSetTrainingAction(userID, MC_RIGHT);
+		IEE_MentalCommandSetTrainingControl(userID, MC_START);
+		++right_counter;
+		printf(" RIGHT trained [ %d ] of times \n ", right_counter);
+	}
+		break;
+
+	case '7':
+
+		printf("  Last trained Mental Command ERASED \n ");
+		IEE_MentalCommandSetTrainingControl(userID, MC_ERASE);
+
+		break;
+
+	case '8':
+
+		printf("  Starting training [ UP ] \n ");
+		IEE_MentalCommandSetTrainingAction(userID, MC_PUSH);
+		IEE_MentalCommandSetTrainingControl(userID, MC_START);
+
+		++push_counter;
+		printf(" UP trained [ %d ] of times \n ", push_counter);
+		break;
+
+	case '9':
+
+		printf("  Current training RESET \n ");
+		IEE_MentalCommandSetTrainingControl(userID, MC_RESET);
+
+		break;
+		// =================================================================================== [ Misc Commands ] =================================================================================== //
+
+	// Pulls up training counter
+	case '/':
+
+		printf("  UP trained     [ %d ] of times \n ", push_counter);
+		printf(" LEFT trained    [ %d ] of times \n ", left_counter);
+		printf(" RIGHT trained   [ %d ] of times \n ", right_counter);
+		printf(" NEUTRAL trained [ %d ] of times \n ", neutral_counter);
+		printf(" DOWN trained    [ %d ] of times \n ", pull_counter);
+		break;
+
+		// Pulls up menu
+	case '0':
+		menu();
+		break;
+
+		// Quits the program the tilde key
+	case '`':
+		return false;
+		break;
+
+	case '*':
+
+		printf("  Set sensitivity for | Left | Right | Up | Down | then press ENTER : ");
+		scanf_s("%i%i%i%i", &left_sensivity, &right_sensivity, &push_sensivity, &pull_sensivity);
+
+		if (IEE_MentalCommandSetActionSensitivity(userID, left_sensivity, right_sensivity, push_sensivity, pull_sensivity) == EDK_OK)
+		{
+			printf("\n  LEFT Sensivity  [ %d ] \n  RIGHT Sensivity [ %d ] \n  PUSH Sensivity  [ %d ] \n  PULL Sensivity  [ %d ] \n\n", left_sensivity, right_sensivity, push_sensivity, pull_sensivity);
+		}
+		else
+		{
+			printf("  ERROR IEE_MentalCommandSetActionSensitivity \n");
+		}
+		break;
+
+	case '+':
+		printf("  Saving Profile ...  \n");  
+		SavingLoadingFunction(userCloudID, true);
+
+		break;
+
+	case '.':
+		printf("  Loading Profile ... \n");
+		SavingLoadingFunction(userCloudID, false);
+
+		break;
+
+	case '-':
+	{
+		int level = 0;
+
+		cout << "Set activation level : ";
+		cin >> level;
+		if (IEE_MentalCommandSetActivationLevel(userID, level) == EDK_OK)
+		{
+			IEE_MentalCommandGetActivationLevel(userID, &level);
+			std::cout << "Set MentalCommand Activation level to " << level << std::endl;
+		}
+		else 
+		{
+			std::cout << "Set MentalCommand Activation level failured " << level << std::endl;
+		}
+	}
+		break;
+
+	case 'd':
+		{
+			int numberOfProfiles = EC_GetAllProfileName(userCloudID);
+
+			cout << "Number of profile(s) found on cloud account : " << numberOfProfiles << endl;
+
+			for (int i = 0; i < numberOfProfiles; i++)
+			{
+				cout << "Profile ID : " << EC_ProfileIDAtIndex(userCloudID, i) << " at Index : " << i << endl;
+			}
+			
+			int delete_Index = 0;
+
+			cout << "Type in Profile Index to delete profile : ";
+			cin >> delete_Index;
+			if (EC_DeleteUserProfile(userCloudID, EC_ProfileIDAtIndex(userCloudID, delete_Index)) == EDK_OK)
+			{
+				cout << "Profile : " << EC_ProfileIDAtIndex(userCloudID, delete_Index) << " DELETED " << endl;
+			}
+			else
+			{
+				cout << "ERROR EC_DeleteUserProfile" << endl;
+			}
+
+		}
+		break;
+	
+	default:
+		break;
+	}
+	return true;
+}
+*/
+
+void handleMentalCommandEvent(unsigned int userID, EmoEngineEventHandle cognitivEvent)
+{
+	IEE_MentalCommandEvent_t eventType = IEE_MentalCommandEventGetType(cognitivEvent);
+
+	switch (eventType)
+	{
+
+	case IEE_MentalCommandTrainingStarted:
+	{
+		//printf(" Training STARTED user [ %d ]  \n\n", userID);
+
+		break;
+	}
+
+	case IEE_MentalCommandTrainingSucceeded:
+	{
+		printf(" Training SUCCESSFUL user [ %d ]  \n", userID);
+		IEE_MentalCommandSetTrainingControl(userID, MC_ACCEPT);
+		printf("  Training ACCEPTED \n\n");
+
+		break;
+	}
+
+	case IEE_MentalCommandTrainingFailed:
+	{
+		printf("  Training FAILED user [ %d ] session REJECTED \n\n", userID);
+		IEE_MentalCommandSetTrainingControl(userID, MC_REJECT);
+		break;
+	}
+
+	case IEE_MentalCommandTrainingCompleted:
+	{
+		unsigned int* time = 0;
+		printf("  Training COMPLETE user [ %d ]  \n\n", userID);
+
+		//cout << "  TIME ELAPSED :" << (IEE_MentalCommandGetTrainingTime(userID, time) / 100.00) << endl;
+		printf("  Ready for next command...\n");
+
+		break;
+	}
+
+	case IEE_MentalCommandTrainingDataErased:
+	{
+		printf(" Training ERASED user [ %d ]  \n\n", userID);
+
+		break;
+	}
+
+	case IEE_MentalCommandTrainingRejected:
+	{
+		printf(" Training REJECTED user [ %d ]  \n\n", userID);
+
+		break;
+	}
+
+	case IEE_MentalCommandTrainingReset:
+	{
+		printf(" Mental Command RESET user [ %d ]  \n\n", userID);
+
+		break;
+	}
+
+	case IEE_MentalCommandAutoSamplingNeutralCompleted:
+	{
+		printf("  MentalCommand auto sampling neutral for user [ %d ] COMPLETED \n\n", userID);
+
+		break;
+	}
+
+	case IEE_MentalCommandSignatureUpdated:
+	{
+		printf("  MentalCommand Signature [ UPDATED ] for user [ %d ]  \n\n", userID);
+
+		break;
+	}
+
+	case IEE_MentalCommandNoEvent:
+		break;
+
+	default:
+		break;
+	}
+}
+
+int main(int argc, char** argv)
+{
+	printf("  Connection to Emotiv Engine.....\n\n");
+
+	if (IEE_EngineConnect() == EDK_OK)
+	{
+		printf("  Connection to Emotiv Engine [ ESTABLISHED ] \n\n");
+		printf("  Connecting to cloud  [ IN PROGRESS ] \n\n");
+
+
+		if(EC_Connect() != EDK_OK)
+		{
+			printf("  Cannot connect to Emotiv Cloud \n\n");
+			return -1;
+		}
+
+		if(EC_Login(userName.c_str(), password.c_str()) != EDK_OK)
+		{			
+			printf("  Your login attempt has failed. The username or password may be incorrect \n\n");
+
+		#ifdef _WIN32
+			std::cin.get();
+		#endif
+
+			return -1;
+		}
+
+		printf("  Logged in as : [ %s ] \n\n", userName.c_str());
+
+
+		if (EC_GetUserDetail(&userCloudID) != EDK_OK) 
+		{
+			printf("  Error: Cannot get detail info, exit  \n\n");
+			return -1;
+		}
+
+		printf("  Establishing Serial Communication with Arduino Board(s)  \n");
+
+		//----------------------------------- Variables to open Comm Port --------------------------------------------//
+
+		hComm = CreateFile(ComPortName,                // Name of the Port to be Opened
+			GENERIC_READ | GENERIC_WRITE,			   // Read/Write Access
+			0,										   // No Sharing, ports cant be shared
+			NULL,                                      // No Security
+			OPEN_EXISTING,                             // Open existing port only
+			0,                                         // Non Overlapped I/O
+			NULL);                                     // Null for Comm Devices
+
+
+		//----------------- Error handling for Comm Port -----------------//
+
+		if (hComm == INVALID_HANDLE_VALUE) //hComm returns different handles 
+		{
+			printf("\n   Error! - Port %s can't be opened", ComPortName);
+		}
+
+		else
+		{
+			printf("\n  Port %s Opened\n ", ComPortName);
+		}
+
+		//------------------------------- Setting the Parameters for the SerialPort ------------------------------//
+
+		DCB dcbSerialParams = { 0 };                        // Initializing DCB structure
+		dcbSerialParams.DCBlength = sizeof(dcbSerialParams);
+
+		Status = GetCommState(hComm, &dcbSerialParams);     //retreives  the current settings
+
+		if (Status == FALSE)
+		{
+			printf("\n   Error! in GetCommState()");
+		}
+		dcbSerialParams.BaudRate = CBR_115200;			 // Setting BaudRate = 115200 = Max Baud Rate
+		dcbSerialParams.ByteSize = 8;					 // Setting ByteSize = 8
+		dcbSerialParams.StopBits = ONESTOPBIT;			 // Setting StopBits = 1
+		dcbSerialParams.Parity = NOPARITY;				 // Setting Parity = None
+
+		Status = SetCommState(hComm, &dcbSerialParams);  //Configuring the port according to settings in DCB
+
+		if (Status == FALSE)
+		{
+			printf("\n   Error! in Setting DCB Structure");
+		}
+
+		//------------------------------------ Setting Timeouts --------------------------------------------------//
+
+		COMMTIMEOUTS timeouts = { 0 };
+
+		timeouts.ReadIntervalTimeout = 50;
+		timeouts.ReadTotalTimeoutConstant = 50;
+		timeouts.ReadTotalTimeoutMultiplier = 10;
+		timeouts.WriteTotalTimeoutConstant = 50;
+		timeouts.WriteTotalTimeoutMultiplier = 10;
+
+		//----------------- Error handling for Timeouts -----------------//
+
+		if (SetCommTimeouts(hComm, &timeouts) == FALSE)
+		{
+			printf("\n   Error! in Setting Time Outs");
+		}
+		else
+		{
+			printf("\n  Serial Port Timeout(s) ESTABLISHED \n\n "
+				" Serial Communication ESTABLISHED \n\n");
+
+			menu();
+		}
+
+	}
+	else
+	{
+		throw std::runtime_error("    Emotiv Driver start up failed.");
+		return -1;
+	}
+
+
+	while (true)
+	{
+		if (_kbhit())
+		{
+			if (!handleUserInput()) 
+			{
+				break;
+			}
+		}
+
+		int state = IEE_EngineGetNextEvent(eEvent);
+
+		if (state == EDK_OK)
+		{
+
+			IEE_Event_t eventType = IEE_EmoEngineEventGetType(eEvent);
+			IEE_EmoEngineEventGetUserId(eEvent, &userID);
+
+			switch (eventType)
+			{
+			case IEE_UserAdded:
+
+
+			printf("\n  =========================");
+			printf("\n  || User [ %d ] ADDED ||", userID);
+			printf("\n  =========================\n\n");
+
+			menu();
+				
+			printf("  Press [ . ] to load current profile \n ");
+
+			break;
+
+			case IEE_UserRemoved:
+
+			printf("\n  =========================");
+			printf("\n  || User [ %d ] REMOVED ||", userID);
+			printf("\n  =========================\n\n");
+
+			break;
+
+			case IEE_EmoStateUpdated:
+			{
+				SHORT toggle{};
+
+				while (toggle =! GetKeyState(27))//Escape Key
+				{
+					state = IEE_EngineGetNextEvent(eEvent);
+
+					if (state == EDK_OK)
+					{
+						IEE_EmoEngineEventGetEmoState(eEvent, eState);
+						IEE_MentalCommandAction_t actionType = IS_MentalCommandGetCurrentAction(eState);
+						float	actionPower = IS_MentalCommandGetCurrentActionPower(eState);
+
+						//printValues(actionType, actionPower);
+						///*
+						//if ((static_cast<int>(actionType) > 1) && (static_cast<int>(actionPower * 100.0f) > 0))
+						//{
+						//	std::cout << static_cast<int>(actionType) << "," << static_cast<int>(actionPower * 100.0f) << std::endl;
+						//}
+						//*/
+
+						ostringstream arduino;
+
+						arduino << "<" << static_cast<int>(actionType) << "," << static_cast<int>(actionPower * 100.0f) << ">" << endl;
+
+						//cout << "Arduino : " << arduino.str() << endl;
+
+						string stringToArduino = arduino.str();
+						char lpBuffer[sizeof(arduino) + 1];
+
+						strcpy_s(lpBuffer, stringToArduino.c_str());
+						dNoOFBytestoWrite = sizeof(lpBuffer);													//Calculating the no of bytes to write into the port
+
+						Status = WriteFile(hComm,																// Handle to the Serialport
+								lpBuffer,																		// Data to be written to the portf
+								dNoOFBytestoWrite,																// No of bytes to write into the port
+								&dNoOfBytesWritten,																// No of bytes written to the port
+								NULL);
+
+						//---------------------- Prints out values to console ----------------------//
+
+						if (Status == TRUE)
+						{
+							//printf("\n   Number Generated to Arduino: %s", lpBuffer);
+							if ((static_cast<int>(actionType) > 1) && (static_cast<int>(actionPower * 100.0f) > 0))
+							{
+								//std::cout << static_cast<int>(actionType) << "," << static_cast<int>(actionPower * 100.0f) << std::endl;
+								printf("\n   Number Generated to Arduino: %s", lpBuffer);
+
+							}
+						}
+						else
+						{
+							printf("\n\n   Error %d in Writing to Serial Port", GetLastError());
+						}
+
+						//------------------------------------ Setting Receive Mask START OF READING STUFF ----------------------------------------------//
+
+						Status = SetCommMask(hComm, EV_RXCHAR); //Configure Windows to Monitor the serial device for Character Reception || EV_EXHAR = Any Character received
+						//Create event for particular action --> ask windows to wait for event that's set by SetCommMask by using WaitCommEvent() that'll tell you wwhen the condition happens
+						if (Status == FALSE)
+						{
+							printf("\n\n    Error! in Setting CommMask");
+						}
+
+						//------------------------------------Setting WaitComm() Event-----------------------------------------//
+
+						Status = WaitCommEvent(hComm, &dwEventMask, NULL); //Wait for the character to be received
+
+						//--------------------------Program will Wait here till a Character is received------------------------//
+
+						if (Status == FALSE)
+						{
+							printf("\n   Error! in Setting WaitCommEvent()");
+						}
+						else //If  WaitCommEvent()==True Read the RXed data using ReadFile();
+						{
+
+							//--------------------------Where stuff is being read in and stored----------------------------------------//
+							do
+							{
+								//--------------------------ReadFile() reads the recieved data from Serial Port----------------------------//
+
+								Status = ReadFile(hComm, &TempChar, sizeof(TempChar), &NoBytesRead, NULL);
+
+								SerialBuffer[i] = TempChar;
+								i++;
+
+							} while (NoBytesRead > 0);
+
+							//----------------------Printing the RXed String to Console [PROBABLY NOT NEEDED] ----------------------//
+
+							// UNCOMMENT TO SEE IF DATA IS BEING SENT BACK FROM ARDUINO BOARD
+							/*
+							for (int j = 0; j < i - 1; j++)					// j < i-1 to remove the dupliated last character
+							{
+								printf("%c", SerialBuffer[j]);
+							}
+							*/
+							memset(SerialBuffer, 0, sizeof(SerialBuffer));	// Clears the serial buffer and prevents overflow from happening || Maybe this is what solved the Error 121?
+							i = 0;
+
+						}// End of else //If  WaitCommEvent()==True Read the RXed data using ReadFile();
+
+
+					}
+				}
+				break;
+			}
+			case IEE_MentalCommandEvent:	
+				handleMentalCommandEvent(userID, eEvent);
+
+			default:
+				break;
+			}
+		}
+
+		else if (state != EDK_NO_EVENT)
+		{
+			printf("\n  =====================================");
+			printf("\n  || Internal error in Emotiv Engine ||");
+			printf("\n  ===================================== \n");
+			break;
+		}
+
+	}//End of while(true)
+
+	IEE_EngineDisconnect();
+	IEE_EmoStateFree(eState);
+	IEE_EmoEngineEventFree(eEvent);
+
+	return 0;
+}

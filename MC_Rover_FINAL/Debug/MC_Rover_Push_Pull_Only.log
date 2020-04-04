@@ -1,0 +1,3 @@
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(459,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (MC_Rover_Push_Pull_Only.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  Rover_FINAL.cpp
+  MC_Rover_Push_Pull_Only.vcxproj -> C:\Users\Chris\source\repos\VS_Arduino\MC_Rover_FINAL\Debug\MC_Rover_FINAL.exe
