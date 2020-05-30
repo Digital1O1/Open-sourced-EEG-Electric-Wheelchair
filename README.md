@@ -2,7 +2,7 @@
 
 This repository will be continuously upadated as of April 4 2020
 
- ===================================  [ INTRODUCTION ]  ===================================
+ =============================  [ INTRODUCTION ]  =============================
 
 The intent of this project was the premise of my Master's thesis, which was to use the Emotiv Insight, a commerically available EEG headset to control an open sourced, electrical wheelchair with PLA-based 3d printed components that could be either retrofitted, or modified to fit any commonly available push wheelchair for those who don't have the financial resources and/or the physical capabilities to control an electric wheelchair.
 
@@ -15,7 +15,7 @@ IT'S IMPORTANT TO TAKE NOTE THAT THIS ENTIRE PROJECT WAS DONE IN C++ WITH WINDOW
 
 After gaining access to the streaming EEG data, the next step was to figure out how to send the streaming EEG data to the Arduino microcontroller. The Universal Asynchronous Receiver/Transmitter (UART) communication protocol that's built into the Arduino microcontroller can only send data generated from the Arduino back to the Arduino IDE to allow the user to monitor the incoming data in real time, however sending generated data from the computer to the Arduino was not possible using the UART on the Arduino. To resolve this issue various functions from the Win32 API were implimented. In depth documentation of the Win32 API and the various functions and their purpose can be found here --> https://www.xanthium.in/Serial-Port-Programming-using-Win32-API
 
- ===================================  [ FILE MANAGEMENT ]  ===================================
+ =============================  [ FILE MANAGEMENT ]  =============================
 
 Since all of the example programs were written using Visual Studio and I wasn't sure what I was getting myself into, I opted to do the same and I downloaded the 'Community' edition here --> https://visualstudio.microsoft.com/downloads/
 
