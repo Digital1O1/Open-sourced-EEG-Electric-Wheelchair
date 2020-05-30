@@ -42,6 +42,6 @@ int main(int argc, char** argv)
 /*
 	To add stuff to online GitHub
 
-	Open Team explorer --> Click on Green Plug
+	Open Team explorer --> Click on Green Plug changes 
 
 */
