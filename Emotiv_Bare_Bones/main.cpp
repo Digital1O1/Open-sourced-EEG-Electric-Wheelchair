@@ -45,4 +45,6 @@ int main(int argc, char** argv)
 	Open Team explorer --> Click on Green Plug --> Click on whatever Repo you're working on --> Setting
 	--> Repo setting --> Ignore & Attribute Files --> on both Ignore/Attribute file click on 'Add' --> /.gitignore should pop up
 
+	test
+
 */
