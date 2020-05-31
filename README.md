@@ -21,10 +21,10 @@ Since all of the example programs were written using Visual Studio and I wasn't 
 
 ------ Steps taken to compile SDK program ------
 
-Step 1: Download the Emotiv Community SDK edition from the link in the introduction
+[ Step 1 ] : Download the Emotiv Community SDK edition from the link in the introduction
 https://github.com/pandark/emotiv-community-sdk
 
-Step 2: Start Visual Studio and under 'Get started' on the right hand side, click on 'Create a new project'
+[ Step 2 ] : Start Visual Studio and under 'Get started' on the right hand side, click on 'Create a new project'
 
 ![Capture22](https://user-images.githubusercontent.com/39348633/83283699-3ccb8980-a1a1-11ea-9e65-ffa6595e668b.JPG)
 
@@ -41,14 +41,13 @@ Another window will pop up, click/highlight the C++ file option and name the fil
 
 ![Capture22](https://user-images.githubusercontent.com/39348633/83313256-11659080-a1db-11ea-960f-075b093e18e9.JPG)
 
-Step 3: Including the Emotiv header file into the project.
+[ Step 3 ] : Including the Emotiv header file into the project.
 
-Locate where you unzipped the Emotiv Community SDK then open up SDK-Master --> Then to the include folder where all the header files are stored then click on the address bar of the folder and copy the contents, this is the 'path' that Visual Studio will need in order to link the Emotiv header files to the project.
+A skeleton code that reference to the Emotiv header files used in this project can be found at the following link and will be used to ensure the header files were linked correctly :https://github.com/Digital1O1/Open-sourced-EEG-Electric-Wheelchair/tree/master/Emotiv_Bare_Bones
+
+Go to where you unzipped the Emotiv Community SDK, open it, then find/open the SDK-Master folder --> Then open/find the include folder where all the header files are stored. Click on the address bar of the folder and copy the contents. The address to the include folder will act as the 'path' that Visual Studio will to link/find the Emotiv header files that are needed for this project.
 
 ![image](https://user-images.githubusercontent.com/39348633/83313907-c39e5780-a1dd-11ea-9f05-3a1e9eb46623.png)
-
-[BARE BONES EXAMPLE] PICK UP HERE LEAVE BARE BONE EXAMPLE PROGRAM ON MASTER BRANCH
-
 
 To include the Emotiv header files go back to Visual Studio and click on Project --> 'Project_name Option' which is the last item listed.
 
@@ -56,3 +55,20 @@ Once the property page(s) window pops up click on --> C/C++ --> General --> 'Add
 
 Copy and paste the 'path' where the Emotiv header files are located and press apply. 
 
+[ Step 4 ] : Including the DLL files in the correct location(s)
+
+On Windows, if you were to 'build' the program right now by pressing ctrl+shift+b, or for the lack of better terms, the 'top' of Visual 
+
+to press ctlr+shift+b, or go to build --> build solution you'll get the following error(s)
+
+![Unresolved_External_Symbol](https://user-images.githubusercontent.com/39348633/83343576-f1f56300-a2c1-11ea-8376-78aafde583c6.JPG)
+
+The LNK2019 is a link error that is thrown for reasons that are currently beyond my reach, but to resolve the issue go to the project drop down menu --> 'Whatever you named your project' project properties --> linker -- Input.
+
+![Unresolved_External_Symbol](https://user-images.githubusercontent.com/39348633/83343865-aba20300-a2c5-11ea-9c88-073dc49e29eb.JPG)
+
+Click on the 'Additional dependencies' option and the drop down menu --> edit. A window will pop up with three sub-sections. In the first just type/add the edk and glut32 library files as shown in the screen shot.
+
+![Unresolved_External_Symbol](https://user-images.githubusercontent.com/39348633/83343982-db053f80-a2c6-11ea-9357-307665ef9725.JPG)
+
+Once agian, I'm not entirely too sure what happens when these files are linked, but I do know for a fact that the Emotiv_Bare_bones example will build and compile successfully though! 
