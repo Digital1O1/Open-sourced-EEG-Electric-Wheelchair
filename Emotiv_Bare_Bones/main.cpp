@@ -31,15 +31,10 @@ EmoStateHandle eState = IEE_EmoStateCreate();
 
 int main(int argc, char** argv)
 {
+	cout << "Program successfully compiled!" << endl;
 
 	IEE_EngineDisconnect();
 	IEE_EmoStateFree(eState);
 	IEE_EmoEngineEventFree(eEvent);
 	return 0;
 }
-/*
-	To add stuff to online GitHub
-	Open Team explorer --> Click on Green Plug --> Click on whatever Repo you're working on --> Setting
-	--> Repo setting --> Ignore & Attribute Files --> on both Ignore/Attribute file click on 'Add' --> /.gitignore should pop up
-	test
-*/
