@@ -4,11 +4,13 @@ This repository will be continuously upadated as of April 4 2020
 
  =============================  [ INTRODUCTION ]  =============================
 
-The intent of this project was the premise of my Master's thesis, which was to use the Emotiv Insight, a commerically available EEG headset to control an open sourced, electrical wheelchair with PLA-based 3d printed components that could be either retrofitted, or modified to fit any commonly available push wheelchair for those who don't have the financial resources and/or the physical capabilities to control an electric wheelchair.
+The intent of this project was the premise of my Master's thesis which involved an Emotiv Insight, a commerically available EEG headset to control an open sourced, electrical wheelchair with PLA-based 3d printed components that could be either retrofitted, or modified to fit any commonly available push wheelchair for those who don't have the financial resources and/or the physical capabilities to control an electric wheelchair.
 
-My intial intentions were to use both the Emotiv Insight and an Arduino microcontroller to control four directional LEDs successfully, then I would step it up and control an Arduino-based RC rover and finally the proposed open-sourced wheelchair. The first step taken was to gain access to the streaming EEG data under the assumption that all five EEG signals were to fall within a certain range when the user thought/concentrated on thinking up, down, left, or right.
+Before controlling the proposed wheelchair my intentions were focused on controlling four LEDs successfully. I would then step it up to see if I could successfully control an Arduino-based RC rover before finally controlling the proposed open-sourced wheelchair. The first step taken was to gain access to the streaming EEG data under the assumption that all five EEG signals were to fall within a certain range when the user thought/concentrated on thinking up, down, left, or right.
 
-However, gaining access to the streaming EEG data would require a montly subscription to Emotiv which cost around $100 as of the fall semester of 2018 when I first started this project. Since then Emotiv had implimented a multi-tier pricing, regardless of the pricing, I wanted to avoid paying any sort of montly fee. Fortunately enough, I somehow stumbled upon the "Emotiv SDK - Community Edition" which provided numerous coding examples that mimicked various functions found in other programs provided by Emotiv. I'm not entirely too sure how long the repository I found the community SDK will stay active, but for now it can be found here --> 
+However after gaining access to the streaming EEG data would require a montly subscription to Emotiv which cost around $100 as of the fall semester of 2018 when I first started this project. Since then Emotiv had implimented a multi-tier pricing, but I was strongly against paying for any sort of subscription with the intentions of making the wheelchair as affordable as possible. Fortunately enough, I somehow stumbled upon the "Emotiv SDK - Community Edition" which provided numerous coding examples that mimicked the funcionality of the programs provided by Emotiv. 
+
+I'm not entirely too sure how long the repository I found the community SDK will stay active, but for now it can be found here --> 
 https://github.com/pandark/emotiv-community-sdk
 
 IT'S IMPORTANT TO TAKE NOTE THAT THIS ENTIRE PROJECT WAS DONE IN C++ WITH WINDOWS 10. 
@@ -17,7 +19,7 @@ After gaining access to the streaming EEG data, the next step was to figure out 
 
  =============================  [ FILE MANAGEMENT ]  =============================
 
-Since all of the example programs were written using Visual Studio and I wasn't sure what I was getting myself into, I opted to do the same and I downloaded the 'Community' edition here --> https://visualstudio.microsoft.com/downloads/
+Since all of the example programs in the Emotiv Community SDK were written using Visual Studio and I wasn't sure what I was getting myself into, I opted to do the same and I downloaded the 'Community' edition here --> https://visualstudio.microsoft.com/downloads/
 
 ------ Steps taken to compile SDK program ------
 
@@ -43,13 +45,13 @@ Another window will pop up, click/highlight the C++ file option and name the fil
 
 [ Step 3 ] : Including the Emotiv header file into the project.
 
-A skeleton code that reference to the Emotiv header files used in this project can be found at the following link and will be used to ensure the header files were linked correctly :https://github.com/Digital1O1/Open-sourced-EEG-Electric-Wheelchair/tree/master/Emotiv_Bare_Bones
+A skeleton code approperately named Emotiv_Bare_Bones can be found in the repoistory and will be used to ensure the header files were linked correctly :https://github.com/Digital1O1/Open-sourced-EEG-Electric-Wheelchair/tree/master/Emotiv_Bare_Bones
 
-Go to where you unzipped the Emotiv Community SDK, open it, then find/open the SDK-Master folder --> Then open/find the include folder where all the header files are stored. Click on the address bar of the folder and copy the contents. The address to the include folder will act as the 'path' that Visual Studio will to link/find the Emotiv header files that are needed for this project.
+After unzipping the Emotiv Community SDK find and open the following folders --> SDK-Master --> Include folder. Click on the address bar of the Include folder and copy the address/contents as we'll need it later to link the header files to the Emotiv_Bare_Bones program.
 
 ![image](https://user-images.githubusercontent.com/39348633/83313907-c39e5780-a1dd-11ea-9f05-3a1e9eb46623.png)
 
-To include the Emotiv header files go back to Visual Studio and click on Project --> 'Project_name Option' which is the last item listed.
+To include the Emotiv header files to the Emotiv_Bare_Bones program go back to Visual Studio and click on Project --> 'Project_name Option' which is the last item listed.
 
 Once the property page(s) window pops up click on --> C/C++ --> General --> 'Additional Include Directories' 
 
