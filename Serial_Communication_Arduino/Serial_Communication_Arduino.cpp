@@ -6,13 +6,16 @@
 using namespace std;
 
 /*
-	IMPORTANT NOTE WHEN USING VISUAL STUDIO 2019 V 16.6.2
+	[]=================================================================== NOTES FROM 6/20/20 ===================================================================[]
+
+	*** IMPORTANT NOTE WHEN USING VISUAL STUDIO 2019 V 16.6.2 ***
 
 	When running this example straight from this site : https://www.xanthium.in/Serial-Port-Programming-using-Win32-API
 
-	You HAVE to add/cast (LPCWSTR) to the ComPortName to avoid throwing the error 
+	To make this work with VS 16.6.2 go to --> Project --> 'Project Name' properties --> Configuration Properties --> Character Set --> 
+	select 'Use Multi-Byte Character Set'
 
-	E0167  C++ argument of type is incompatible with parameter of type "LPCWSTR"
+	'Static Casting' (LPCWSTR) to the ComPortName won't work for some reason, and I didn't want to vest more time to figuring out why.
 
 	Reference link to Stackoverflow solution is found here ---> https://stackoverflow.com/questions/33001284/incompatible-with-parameter-of-type-lpcwstr
 */
@@ -20,15 +23,21 @@ using namespace std;
 int main()
 {
 	HANDLE hComm;                          // Handle to the Serial port
-	char   ComPortName[] = "\\\\.\\COM24"; // Name of the Serial port(May Change) to be opened,
-	BOOL   Status;
+	char   ComPortName[] = "\\\\.\\COM7"; // Name of the Serial port(May Change) to be opened,
+	BOOL  Status;                          // Status of the various operations 
+	DWORD dwEventMask;                     // Event mask to trigger
+	char  TempChar;                        // Temperory Character
+	char  SerialBuffer[256];               // Buffer Containing Rxed Data
+	DWORD NoBytesRead;                     // Bytes read by ReadFile()
+	int i = 0;
+
 	printf("\n\n +==========================================+");
 	printf("\n |  Serial Transmission (Win32 API)         |");
 	printf("\n +==========================================+\n");
 
 	/*----------------------------------- Opening the Serial Port --------------------------------------------*/
 
-	hComm = CreateFile((LPCWSTR)ComPortName,                       // Name of the Port to be Opened
+	hComm = CreateFile(ComPortName,                       // Name of the Port to be Opened
 		GENERIC_READ | GENERIC_WRITE,      // Read/Write Access
 		0,                                 // No Sharing, ports cant be shared
 		NULL,                              // No Security
@@ -88,7 +97,58 @@ int main()
 		printf("\n\n   Setting Serial Port Timeouts Successfull");
 
 
-	/*----------------------------- Writing a Character to Serial Port----------------------------------------*/
+	/*------------------------------------ Setting Receive Mask ----------------------------------------------*/
+
+	Status = SetCommMask(hComm, EV_RXCHAR); //Configure Windows to Monitor the serial device for Character Reception
+
+	if (Status == FALSE)
+		printf("\n\n    Error! in Setting CommMask \n\n");
+	else
+		printf("\n\n    Setting CommMask successfull \n\n");
+
+	std::cout << "PRESS ENTER TO CONTINUE" << std::endl;
+	cin.get();
+	/*------------------------------------ Setting WaitComm() Event   ----------------------------------------*/
+	while (true)
+	{
+		printf("\n\n    Waiting for Data Reception");
+
+		Status = WaitCommEvent(hComm, &dwEventMask, NULL); //Wait for the character to be received
+
+		/*-------------------------- Program will Wait here till a Character is received ------------------------*/
+
+		if (Status == FALSE)
+		{
+			printf("\n    Error! in Setting WaitCommEvent()");
+		}
+		else //If  WaitCommEvent()==True Read the RXed data using ReadFile();
+		{
+			printf("\n\n    Characters Received : ");
+			do
+			{
+				Status = ReadFile(hComm, &TempChar, sizeof(TempChar), &NoBytesRead, NULL);
+				SerialBuffer[i] = TempChar;
+				i++;
+			} while (NoBytesRead > 0);
+
+			/*------------Printing the RXed String to Console----------------------*/
+
+			//printf("\n\n    ");
+			int j = 0;
+			for (j = 0; j < i - 1; j++)		// j < i-1 to remove the dupliated last character
+			{
+				printf("%c", SerialBuffer[j]);
+			}
+			memset(SerialBuffer, 0, sizeof(SerialBuffer));
+			i = 0;
+		}
+	
+	}
+	CloseHandle(hComm);//Closing the Serial Port
+	printf("\n +==========================================+\n");
+
+	/*
+	//----------------------------- Writing a Character to Serial Port----------------------------------------//
 	char   lpBuffer[] = "A";		       // lpBuffer should be  char or byte array, otherwise write wil fail
 	DWORD  dNoOFBytestoWrite;              // No of bytes to write into the port
 	DWORD  dNoOfBytesWritten = 0;          // No of bytes written to the port
@@ -105,6 +165,7 @@ int main()
 		printf("\n\n    %s - Written to %s", lpBuffer, ComPortName);
 	else
 		printf("\n\n   Error %d in Writing to Serial Port", GetLastError());
+	*/
 
 	CloseHandle(hComm);//Closing the Serial Port
 	printf("\n ==========================================\n");
