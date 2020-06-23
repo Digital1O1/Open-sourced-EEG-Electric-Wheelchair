@@ -2,6 +2,12 @@
 
 This repository will be continuously upadated as of April 4 2020
 
+*** IMPORTANT NOTE [6/22/2020] ***
+
+I recently had to do a factory reset on my laptop and have lost the majority of my files.
+
+But I am in the process of working on getting everything back together, so please bear with me in the meantime.
+
  =============================  [ INTRODUCTION ]  =============================
 
 The intent of this project was the premise of my Master's thesis which involved an Emotiv Insight, a commerically available EEG headset to control an open sourced, electrical wheelchair with PLA-based 3d printed components that could be either retrofitted, or modified to fit any commonly available push wheelchair for those who don't have the financial resources and/or the physical capabilities to control an electric wheelchair.
