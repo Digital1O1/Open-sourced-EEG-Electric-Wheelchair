@@ -63,20 +63,36 @@ Once the property page(s) window pops up click on --> C/C++ --> General --> 'Add
 
 Copy and paste the 'path' where the Emotiv header files are located and press apply. 
 
-[ Step 4 ] : Including the DLL files in the correct location(s)
+[ Step 4 ] : Including the path and DLL files
 
-On Windows, if you were to 'build' the program right now by pressing ctrl+shift+b, or for the lack of better terms, the 'top' of Visual 
-
-to press ctlr+shift+b, or go to build --> build solution you'll get the following error(s)
+On Windows, if you were to 'build' the program right now by pressing ctrl+shift+b you'll get the following error(s)
 
 ![Unresolved_External_Symbol](https://user-images.githubusercontent.com/39348633/83343576-f1f56300-a2c1-11ea-8376-78aafde583c6.JPG)
 
-The LNK2019 is a link error that is thrown for reasons that are currently beyond my reach, but to resolve the issue go to the project drop down menu --> 'Whatever you named your project' project properties --> linker -- Input.
+The LNK2019 is a link error that is thrown for reasons that are currently beyond my reach, but to resolve the DLL files and the path where they are located must be included in the current project.
+
+To do so, to go 'Project' in the menu bar --> 'Whatever you named your project' project properties --> linker -- Input.
 
 ![Unresolved_External_Symbol](https://user-images.githubusercontent.com/39348633/83343865-aba20300-a2c5-11ea-9c88-073dc49e29eb.JPG)
 
-Click on the 'Additional dependencies' option and the drop down menu --> edit. A window will pop up with three sub-sections. In the first just type/add the edk and glut32 library files as shown in the screen shot.
+Click on the 'Additional dependencies' option and the drop down menu --> edit. 
+
+A window will pop up with three sub-sections. 
+
+In the first just type/add edk.lib, press enter, then add glut32.lib as shown in the screen shot.
 
 ![Unresolved_External_Symbol](https://user-images.githubusercontent.com/39348633/83343982-db053f80-a2c6-11ea-9357-307665ef9725.JPG)
 
-Once agian, I'm not entirely too sure what happens when these files are linked, but I do know for a fact that the Emotiv_Bare_bones example will build and compile successfully though! 
+To include the path to the .lib files, look for 'VC++ Directories' --> Library Directories.
+
+From there, just copy and paste the path where the .lib files are located as done with the header files
+
+![image](https://user-images.githubusercontent.com/39348633/85937895-8658e280-b8cd-11ea-8a50-f33b79a0bc2f.png)
+
+[ Step 5 ] : Build/Compile the program!
+
+The last step to do is just press ctrl + F5 to run the program and you should see the debug console pop up stating that the program successfully compiled!
+
+
+![image](https://user-images.githubusercontent.com/39348633/85937924-e2236b80-b8cd-11ea-9d5b-d072a2637170.png)
+
