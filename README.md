@@ -51,7 +51,7 @@ Another window will pop up, click/highlight the C++ file option and name the fil
 
 [ Step 3 ] : Including the Emotiv header file into the project.
 
-A skeleton code approperately named Emotiv_Bare_Bones can be found in the repoistory and will be used to ensure the header files were linked correctly :https://github.com/Digital1O1/Open-sourced-EEG-Electric-Wheelchair/tree/master/Emotiv_Bare_Bones
+A skeleton code approperately named Emotiv_Bare_Bones can be found in the repoistory and will be used to ensure the header files were linked correctly : https://github.com/Digital1O1/Open-sourced-EEG-Electric-Wheelchair/tree/master/Emotiv_Bare_Bones
 
 After unzipping the Emotiv Community SDK find and open the following folders --> SDK-Master --> Include folder. Click on the address bar of the Include folder and copy the address/contents as we'll need it later to link the header files to the Emotiv_Bare_Bones program.
 
@@ -63,7 +63,9 @@ Once the property page(s) window pops up click on --> C/C++ --> General --> 'Add
 
 Copy and paste the 'path' where the Emotiv header files are located and press apply. 
 
-[ Step 4 ] : Including the path and DLL files
+![image](https://user-images.githubusercontent.com/39348633/85958801-e5fece80-b95d-11ea-9615-53fd6326eabb.png)
+
+[ Step 4 ] : Including the DLL files and PATH
 
 On Windows, if you were to 'build' the program right now by pressing ctrl+shift+b you'll get the following error(s)
 
@@ -89,7 +91,25 @@ From there, just copy and paste the path where the .lib files are located as don
 
 ![image](https://user-images.githubusercontent.com/39348633/85937895-8658e280-b8cd-11ea-8a50-f33b79a0bc2f.png)
 
-[ Step 5 ] : Build/Compile the program!
+[ Step 6 ] : Copy/Paste edk.dll/glut32.dll files into the Debug folder
+
+If you go to the Emotiv Folder --> bin --> Win32 --> You should see two files:
+
+1) Edk.dll
+2) Glut32.dll
+
+Copy and paste both of those files
+
+Go to where ever you have the Emotiv_Bare_Bones folder stored and find the 'Debug' folder
+
+![image](https://user-images.githubusercontent.com/39348633/85959441-3e37cf80-b962-11ea-9c0f-5c14184a4676.png)
+
+And just copy and paste both DLL files 
+
+![image](https://user-images.githubusercontent.com/39348633/85959516-7ccd8a00-b962-11ea-9cd6-0a758345624d.png)
+
+
+[ Step 6 ] : Build/Compile the program!
 
 The last step to do is just press ctrl + F5 to run the program and you should see the debug console pop up stating that the program successfully compiled!
 
