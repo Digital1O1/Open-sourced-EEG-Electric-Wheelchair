@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Serial_Communication_Arduino.cpp">
+    <ClCompile Include="..\..\..\..\..\OneDrive\Desktop\Serial_Comm_Arduino.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
