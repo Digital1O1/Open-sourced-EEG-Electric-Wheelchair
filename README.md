@@ -1,7 +1,4 @@
-# Emotiv_Insight
-
-This repository will be continuously upadated as of April 4 2020
-
+========================== THIS REPOSITORY IS A WORK IN PROGRESS AND WILL BE CONTINIOUSLY UPDATED ==========================
 *** IMPORTANT NOTE [6/22/2020] ***
 
 I recently had to do a factory reset on my laptop and lost the majority of my files in the process.
@@ -49,9 +46,7 @@ Once everything is loaded, you'll be presented with a blank screen and the 'Solu
 
 ![Capture22](https://user-images.githubusercontent.com/39348633/83313212-e0855b80-a1da-11ea-9d24-d222ec9e532e.JPG)
 
-Another window will pop up, click/highlight the C++ file option and name the file whatever you wish. 
-
-Out of habit, I''ll be calling mine main.cpp
+Another window will pop up, click/highlight the C++ file option and name the file whatever you wish. Out of habit, I''ll be calling mine main.cpp
 
 ![Capture22](https://user-images.githubusercontent.com/39348633/83313256-11659080-a1db-11ea-960f-075b093e18e9.JPG)
 
