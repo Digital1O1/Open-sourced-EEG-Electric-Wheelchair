@@ -1,4 +1,4 @@
-========================== THIS REPOSITORY IS A WORK IN PROGRESS AND WILL BE CONTINIOUSLY UPDATED ==========================
+==================== THIS REPOSITORY IS A WORK IN PROGRESS AND WILL BE CONTINIOUSLY UPDATED ====================
 *** IMPORTANT NOTE [6/22/2020] ***
 
 I recently had to do a factory reset on my laptop and lost the majority of my files in the process.
