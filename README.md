@@ -34,8 +34,6 @@ Since all of the example programs in the Emotiv Community SDK were written using
 
 The downloaded the 'Community' edition here --> https://visualstudio.microsoft.com/downloads/
 
------- Steps taken to compile SDK program ------
-
 [ Step 1 ] : Download the Emotiv Community SDK edition from the link in the introduction
 https://github.com/pandark/emotiv-community-sdk
 
@@ -56,6 +54,14 @@ Another window will pop up, click/highlight the C++ file option and name the fil
 Out of habit, I''ll be calling mine main.cpp
 
 ![Capture22](https://user-images.githubusercontent.com/39348633/83313256-11659080-a1db-11ea-960f-075b093e18e9.JPG)
+
+As of Version 16.6.2 of Visual Studio, you will have to set the 'Character Set' from Single-byte to Multi-Byte in order to open the COMM port between the C++ program and the Arduino. 
+
+In order to do so from the top menu bar click on --> Project --> 'Project name' Properties --> Advanced --> Under advanced properties find 'Character Set' --> Click on the drop down menu --> Click on 'Use Multi-Byte Character Set'
+
+![image](https://user-images.githubusercontent.com/39348633/86062993-7e18b880-ba2f-11ea-8035-b8357fb18061.png)
+
+![image](https://user-images.githubusercontent.com/39348633/86062935-64777100-ba2f-11ea-98d5-2e4d9bdb75c2.png)
 
 [ Step 3 ] : Including the Emotiv header file into the project.
 
