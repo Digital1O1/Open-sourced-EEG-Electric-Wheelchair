@@ -4,28 +4,35 @@ This repository will be continuously upadated as of April 4 2020
 
 *** IMPORTANT NOTE [6/22/2020] ***
 
-I recently had to do a factory reset on my laptop and have lost the majority of my files.
+I recently had to do a factory reset on my laptop and lost the majority of my files in the process.
 
-But I am in the process of working on getting everything back together, so please bear with me in the meantime.
+I'm currently back tracking and piecing everything back together to the best of my ability, so please bear with me in the meantime.
 
  =============================  [ INTRODUCTION ]  =============================
 
-The intent of this project was the premise of my Master's thesis which involved an Emotiv Insight, a commerically available EEG headset to control an open sourced, electrical wheelchair with PLA-based 3d printed components that could be either retrofitted, or modified to fit any commonly available push wheelchair for those who don't have the financial resources and/or the physical capabilities to control an electric wheelchair.
+The intent of this project was the premise of my Master's thesis, which was geared towards integrating a commerically avilable EEG headset called the Emotiv Insight to control an open sourced, electric wheelchair that had PLA-based 3d-printed components that could be retrofitted onto a commonly available push wheelchair for those who either can't physically operate a traditional wheelchair or don't have the fiancial resources to purchase a readily available electric wheelchair. 
 
-Before controlling the proposed wheelchair my intentions were focused on controlling four LEDs successfully. I would then step it up to see if I could successfully control an Arduino-based RC rover before finally controlling the proposed open-sourced wheelchair. The first step taken was to gain access to the streaming EEG data under the assumption that all five EEG signals were to fall within a certain range when the user thought/concentrated on thinking up, down, left, or right.
+Before controlling the proposed wheelchair, other simpler peripherals such as a single LED were used to solidify the proof of concept that the headset could be used as a controlling factor. Eventually more complex peripherals such as four directional LEDs and an Arduino-based RC rover were also used to solidify the proof of concept before 
+finally controlling the proposed open-sourced wheelchair. 
 
-However after gaining access to the streaming EEG data would require a montly subscription to Emotiv which cost around $100 as of the fall semester of 2018 when I first started this project. Since then Emotiv had implimented a multi-tier pricing, but I was strongly against paying for any sort of subscription with the intentions of making the wheelchair as affordable as possible. Fortunately enough, I somehow stumbled upon the "Emotiv SDK - Community Edition" which provided numerous coding examples that mimicked the funcionality of the programs provided by Emotiv. 
+The first step I took was to figure out a way to gain access to the streaming EEG data since I was under the assumption that all five EEG signals were to fall within a certain range when the user concentated on a particular direction.
+
+Gaining access to the streaming EEG data with the Emotiv headset however would require a montly subscription. When I started this project in the Fall semester of 2018, the subscription was around $100 dollars a month. Since then Emotiv had implimented a multi-tier pricing, but regardless of the price, I was strongly against paying any sort of subscription as I had the intentions of making the wheelchair as affordable as possible. 
+
+Fortunately enough, I somehow stumbled upon the "Emotiv SDK - Community Edition" which provided numerous coding examples that mimicked the funcionality of the programs provided by Emotiv. 
 
 I'm not entirely too sure how long the repository I found the community SDK will stay active, but for now it can be found here --> 
 https://github.com/pandark/emotiv-community-sdk
 
 IT'S IMPORTANT TO TAKE NOTE THAT THIS ENTIRE PROJECT WAS DONE IN C++ WITH WINDOWS 10. 
 
-After gaining access to the streaming EEG data, the next step was to figure out how to send the streaming EEG data to the Arduino microcontroller. The Universal Asynchronous Receiver/Transmitter (UART) communication protocol that's built into the Arduino microcontroller can only send data generated from the Arduino back to the Arduino IDE to allow the user to monitor the incoming data in real time, however sending generated data from the computer to the Arduino was not possible using the UART on the Arduino. To resolve this issue various functions from the Win32 API were implimented. In depth documentation of the Win32 API and the various functions and their purpose can be found here --> https://www.xanthium.in/Serial-Port-Programming-using-Win32-API
+The next section will discuss the steps taken to configure various settings in Microsoft Visual Studio in order to build/compile/run a skeletonized C++ program based off the Community version of the Emotiv SDK.
 
  =============================  [ FILE MANAGEMENT ]  =============================
 
-Since all of the example programs in the Emotiv Community SDK were written using Visual Studio and I wasn't sure what I was getting myself into, I opted to do the same and I downloaded the 'Community' edition here --> https://visualstudio.microsoft.com/downloads/
+Since all of the example programs in the Emotiv Community SDK were written using Visual Studio and I wasn't sure what I was getting myself into, I opted to do the same.
+
+The downloaded the 'Community' edition here --> https://visualstudio.microsoft.com/downloads/
 
 ------ Steps taken to compile SDK program ------
 
@@ -44,8 +51,9 @@ Once everything is loaded, you'll be presented with a blank screen and the 'Solu
 
 ![Capture22](https://user-images.githubusercontent.com/39348633/83313212-e0855b80-a1da-11ea-9d24-d222ec9e532e.JPG)
 
+Another window will pop up, click/highlight the C++ file option and name the file whatever you wish. 
 
-Another window will pop up, click/highlight the C++ file option and name the file whatever you wish. Out of habit, I''ll be calling mine main.cpp
+Out of habit, I''ll be calling mine main.cpp
 
 ![Capture22](https://user-images.githubusercontent.com/39348633/83313256-11659080-a1db-11ea-960f-075b093e18e9.JPG)
 
@@ -57,7 +65,7 @@ After unzipping the Emotiv Community SDK find and open the following folders -->
 
 ![image](https://user-images.githubusercontent.com/39348633/83313907-c39e5780-a1dd-11ea-9f05-3a1e9eb46623.png)
 
-To include the Emotiv header files to the Emotiv_Bare_Bones program go back to Visual Studio and click on Project --> 'Project_name Option' which is the last item listed.
+To include the Emotiv header files to the Emotiv_Bare_Bones program go back to Visual Studio and click on Project --> 'Emotiv_Bare_Bones Option' which is the last item listed.
 
 Once the property page(s) window pops up click on --> C/C++ --> General --> 'Additional Include Directories' 
 
@@ -71,7 +79,7 @@ On Windows, if you were to 'build' the program right now by pressing ctrl+shift+
 
 ![Unresolved_External_Symbol](https://user-images.githubusercontent.com/39348633/83343576-f1f56300-a2c1-11ea-8376-78aafde583c6.JPG)
 
-The LNK2019 is a link error that is thrown for reasons that are currently beyond my reach, but to resolve the DLL files and the path where they are located must be included in the current project.
+To resolve the LNK error the PATH of the DLL files must be included in the current project.
 
 To do so, to go 'Project' in the menu bar --> 'Whatever you named your project' project properties --> linker -- Input.
 
@@ -98,13 +106,15 @@ If you go to the Emotiv Folder --> bin --> Win32 --> You should see two files:
 1) Edk.dll
 2) Glut32.dll
 
+![image](https://user-images.githubusercontent.com/39348633/85967937-3d666400-b989-11ea-9157-c5eda42136ce.png)
+
 Copy and paste both of those files
 
 Go to where ever you have the Emotiv_Bare_Bones folder stored and find the 'Debug' folder
 
 ![image](https://user-images.githubusercontent.com/39348633/85959441-3e37cf80-b962-11ea-9c0f-5c14184a4676.png)
 
-And just copy and paste both DLL files 
+Then copy and paste both DLL files into the Debug folder
 
 ![image](https://user-images.githubusercontent.com/39348633/85959516-7ccd8a00-b962-11ea-9cd6-0a758345624d.png)
 
