@@ -1,14 +1,14 @@
-======= THIS REPOSITORY IS A WORK IN PROGRESS AND WILL BE CONTINIOUSLY UPDATED =======
+# ***THIS REPOSITORY IS A WORK IN PROGRESS AND WILL BE CONTINIOUSLY UPDATED*** <h1>
 
 
-***************** IMPORTANT NOTE [6/22/2020] *****************
+# **IMPORTANT NOTE [6/22/2020]** <h1>
 
 
 I recently had to do a factory reset on my laptop and lost the majority of my files in the process.
 
 I'm currently back tracking and piecing everything back together to the best of my ability, so please bear with me in the meantime.
 
- # =============================  [ INTRODUCTION ]  ============================= <h1>
+ # [ INTRODUCTION ] <h1>
 
 The intent of this project was the premise of my Master's thesis, which was geared towards integrating a commerically avilable EEG headset called the Emotiv Insight to control an open sourced, electric wheelchair that had PLA-based 3d-printed components that could be retrofitted onto a commonly available push wheelchair for those who are suffering from a physical disability and can't operate a traditional push wheelchair, or give those who don't have the fiancial resources to purchase a commerically available electric wheelchair an option.
 
@@ -23,20 +23,23 @@ Fortunately enough, I somehow stumbled upon the "Emotiv SDK - Community Edition"
 I'm not entirely too sure how long the repository I found the community SDK will stay active, but for now it can be found here --> 
 https://github.com/pandark/emotiv-community-sdk
 
-IT'S IMPORTANT TO TAKE NOTE THAT THIS ENTIRE PROJECT WAS DONE IN C++ WITH WINDOWS 10. 
+***IT'S IMPORTANT TO TAKE NOTE THAT THIS ENTIRE PROJECT WAS DONE IN C++ WITH WINDOWS 10.*** 
 
 The next section will discuss the steps taken to configure various settings in Microsoft Visual Studio in order to build/compile/run a skeletonized C++ program based off the Community version of the Emotiv SDK.
 
- ============================= [Running the Emotiv_Bare_Bones program]  =============================
-
+# [Running the Emotiv_Bare_Bones program] <h1>
+ 
 Since all of the example programs in the Emotiv Community SDK were written using Visual Studio and I wasn't sure what I was getting myself into, I opted to do the same.
 
 The downloaded the 'Community' edition here --> https://visualstudio.microsoft.com/downloads/
 
-[ Step 1 ] : Download the Emotiv Community SDK edition from the link in the introduction
-https://github.com/pandark/emotiv-community-sdk
+# [ Step 1 ] : Download the Emotiv Community SDK edition <h5> 
+ 
+Download here --> https://github.com/pandark/emotiv-community-sdk
 
-[ Step 2 ] : Start Visual Studio and under 'Get started' on the right hand side, click on 'Create a new project'
+# [ Step 2 ] : Start Visual Studio <h5>
+ 
+Under 'Get started' on the right hand side, click on 'Create a new project'
 
 ![Capture22](https://user-images.githubusercontent.com/39348633/83283699-3ccb8980-a1a1-11ea-9e65-ffa6595e668b.JPG)
 
@@ -60,7 +63,7 @@ In order to do so from the top menu bar click on --> Project --> 'Project name' 
 
 ![image](https://user-images.githubusercontent.com/39348633/86062935-64777100-ba2f-11ea-98d5-2e4d9bdb75c2.png)
 
-[ Step 3 ] : Including the Emotiv header file into the project.
+# [ Step 3 ] : Adding the Emotiv header files <h5>
 
 A skeleton code approperately named Emotiv_Bare_Bones can be found in the repoistory and will be used to ensure the header files were linked correctly : https://github.com/Digital1O1/Open-sourced-EEG-Electric-Wheelchair/tree/master/Emotiv_Bare_Bones
 
@@ -76,7 +79,7 @@ Copy and paste the 'path' where the Emotiv header files are located and press ap
 
 ![image](https://user-images.githubusercontent.com/39348633/85958801-e5fece80-b95d-11ea-9615-53fd6326eabb.png)
 
-[ Step 4 ] : Including the DLL files and PATH
+# [ Step 4 ] : Including the DLL files and PATH <h5>
 
 On Windows, if you were to 'build' the program right now by pressing ctrl+shift+b you'll get the following error(s)
 
@@ -102,12 +105,12 @@ From there, just copy and paste the path where the .lib files are located as don
 
 ![image](https://user-images.githubusercontent.com/39348633/85937895-8658e280-b8cd-11ea-8a50-f33b79a0bc2f.png)
 
-[ Step 6 ] : Copy/Paste edk.dll/glut32.dll files into the Debug folder
+# [ Step 6 ] : Adding the DLL files to Debug folder <h5>
 
 If you go to the Emotiv Folder --> bin --> Win32 --> You should see two files:
 
-1) Edk.dll
-2) Glut32.dll
+*Edk.dll
+*Glut32.dll
 
 ![image](https://user-images.githubusercontent.com/39348633/85967937-3d666400-b989-11ea-9157-c5eda42136ce.png)
 
@@ -122,7 +125,7 @@ Then copy and paste both DLL files into the Debug folder
 ![image](https://user-images.githubusercontent.com/39348633/85959516-7ccd8a00-b962-11ea-9cd6-0a758345624d.png)
 
 
-[ Step 6 ] : Build/Compile the program!
+# [ Step 6 ] : Build/Compile the program! <h5>
 
 The last step to do is just press ctrl + F5 to run the program and you should see the debug console pop up stating that the program successfully compiled!
 
