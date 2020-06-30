@@ -8,7 +8,7 @@ I recently had to do a factory reset on my laptop and lost the majority of my fi
 
 I'm currently back tracking and piecing everything back together to the best of my ability, so please bear with me in the meantime.
 
- =============================  [ INTRODUCTION ]  =============================
+ # =============================  [ INTRODUCTION ]  ============================= <h1>
 
 The intent of this project was the premise of my Master's thesis, which was geared towards integrating a commerically avilable EEG headset called the Emotiv Insight to control an open sourced, electric wheelchair that had PLA-based 3d-printed components that could be retrofitted onto a commonly available push wheelchair for those who are suffering from a physical disability and can't operate a traditional push wheelchair, or give those who don't have the fiancial resources to purchase a commerically available electric wheelchair an option.
 
