@@ -1,4 +1,5 @@
 ============= THIS REPOSITORY IS A WORK IN PROGRESS AND WILL BE CONTINIOUSLY UPDATED =============
+
 *** IMPORTANT NOTE [6/22/2020] ***
 
 I recently had to do a factory reset on my laptop and lost the majority of my files in the process.
@@ -7,14 +8,13 @@ I'm currently back tracking and piecing everything back together to the best of 
 
  =============================  [ INTRODUCTION ]  =============================
 
-The intent of this project was the premise of my Master's thesis, which was geared towards integrating a commerically avilable EEG headset called the Emotiv Insight to control an open sourced, electric wheelchair that had PLA-based 3d-printed components that could be retrofitted onto a commonly available push wheelchair for those who either can't physically operate a traditional wheelchair or don't have the fiancial resources to purchase a readily available electric wheelchair. 
+The intent of this project was the premise of my Master's thesis, which was geared towards integrating a commerically avilable EEG headset called the Emotiv Insight to control an open sourced, electric wheelchair that had PLA-based 3d-printed components that could be retrofitted onto a commonly available push wheelchair for those who are suffering from a physical disability and can't operate a traditional push wheelchair, or give those who don't have the fiancial resources to purchase a commerically available electric wheelchair an option.
 
-Before controlling the proposed wheelchair, other simpler peripherals such as a single LED were used to solidify the proof of concept that the headset could be used as a controlling factor. Eventually more complex peripherals such as four directional LEDs and an Arduino-based RC rover were also used to solidify the proof of concept before 
-finally controlling the proposed open-sourced wheelchair. 
+Before any attempts were made to control the proposed wheelchair, simpiler peripherals such as a single LED were used to solidify the proof of concept that the headset could be used as a controlling factor. Over time, more complex peripherals such as four directional LEDs and an Arduino-based RC rover were also used to solidify the proof of concept before finally controlling the proposed open-sourced wheelchair. 
 
 The first step I took was to figure out a way to gain access to the streaming EEG data since I was under the assumption that all five EEG signals were to fall within a certain range when the user concentated on a particular direction.
 
-Gaining access to the streaming EEG data with the Emotiv headset however would require a montly subscription. When I started this project in the Fall semester of 2018, the subscription was around $100 dollars a month. Since then Emotiv had implimented a multi-tier pricing, but regardless of the price, I was strongly against paying any sort of subscription as I had the intentions of making the wheelchair as affordable as possible. 
+Gaining access to the streaming EEG data with the Emotiv headset however would require a montly subscription. When I started this project in the Fall semester of 2018, the  monthly subscription was around $100 dollars a month. Since then Emotiv had implimented a multi-tier pricing with a lower price for students, but regardless of the price, I was strongly against paying the montly subscription due to a combination of personal reasons and the intention of keeping the proposed wheelchair as affordiable as possible.
 
 Fortunately enough, I somehow stumbled upon the "Emotiv SDK - Community Edition" which provided numerous coding examples that mimicked the funcionality of the programs provided by Emotiv. 
 
@@ -25,7 +25,7 @@ IT'S IMPORTANT TO TAKE NOTE THAT THIS ENTIRE PROJECT WAS DONE IN C++ WITH WINDOW
 
 The next section will discuss the steps taken to configure various settings in Microsoft Visual Studio in order to build/compile/run a skeletonized C++ program based off the Community version of the Emotiv SDK.
 
- =============================  [ FILE MANAGEMENT ]  =============================
+ =============================  [ FILE MANAGEMENT | Compile/Run Emotiv_Bare_Bones program]  =============================
 
 Since all of the example programs in the Emotiv Community SDK were written using Visual Studio and I wasn't sure what I was getting myself into, I opted to do the same.
 
@@ -80,7 +80,7 @@ On Windows, if you were to 'build' the program right now by pressing ctrl+shift+
 
 ![Unresolved_External_Symbol](https://user-images.githubusercontent.com/39348633/83343576-f1f56300-a2c1-11ea-8376-78aafde583c6.JPG)
 
-To resolve the LNK error the PATH of the DLL files must be included in the current project.
+To resolve the LNK error, the PATH of the DLL files must be included in the current project.
 
 To do so, to go 'Project' in the menu bar --> 'Whatever you named your project' project properties --> linker -- Input.
 
@@ -96,7 +96,7 @@ In the first just type/add edk.lib, press enter, then add glut32.lib as shown in
 
 To include the path to the .lib files, look for 'VC++ Directories' --> Library Directories.
 
-From there, just copy and paste the path where the .lib files are located as done with the header files
+From there, just copy and paste the path where the .lib files are located as done with the header files. For clarification-sake, I used the .lib files in the Win32 folder and used that PATH, and I highly recommend y'all do the same.
 
 ![image](https://user-images.githubusercontent.com/39348633/85937895-8658e280-b8cd-11ea-8a50-f33b79a0bc2f.png)
 
