@@ -27,7 +27,7 @@ IT'S IMPORTANT TO TAKE NOTE THAT THIS ENTIRE PROJECT WAS DONE IN C++ WITH WINDOW
 
 The next section will discuss the steps taken to configure various settings in Microsoft Visual Studio in order to build/compile/run a skeletonized C++ program based off the Community version of the Emotiv SDK.
 
- =============================  [ FILE MANAGEMENT | Run Emotiv_Bare_Bones program]  =============================
+ ============================= [Running the Emotiv_Bare_Bones program]  =============================
 
 Since all of the example programs in the Emotiv Community SDK were written using Visual Studio and I wasn't sure what I was getting myself into, I opted to do the same.
 
