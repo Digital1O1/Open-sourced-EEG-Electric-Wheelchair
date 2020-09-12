@@ -1,8 +1,56 @@
-# ***THIS REPOSITORY IS A WORK IN PROGRESS AND WILL BE CONTINIOUSLY UPDATED*** <h1>
+# **THIS REPOSITORY IS A WORK IN PROGRESS AND WILL BE CONTINIOUSLY UPDATED** <h1>
 
+# **SIGNIFICANT UPDATE AS OF [9/11/2020]** <h1>
+
+Around the June-July timeframe I got a new laptop and had updated the Emotiv software.
+
+Prior to the update, I was still able to get data off the headset as long as the contact quality was ~66%, which meant as long as I had "Good" contact with at least 4 of the 6 dry polymer electrodes, I was golden.
+
+But after the update, in order to get data off the headset required a contact quality of AT LEAST 95% which was something I couldn't achieve despite troubleshooting any and every possible issue that would come to mind.
+
+As much as I hate to admit it, I un-intentionally "bricked" the headset.
+
+On the flip side, the Emotiv Insight was the most expensive part of the entire build.
+
+Which reminds me that I need to upload an excel spreadsheet for the parts being used and how much everything costs.
+
+So in the mean time, the new controlling methods that I plan on using for the wheelchair are : 
+
+1) An analog joystick
+![image](https://user-images.githubusercontent.com/39348633/92987649-2e705780-f48a-11ea-893a-061003f9f61e.png)
+
+2) An MPU-9250 Iternal Measurement Unit which can measure gyroscopic/accelerometer/magnetometer data
+![image](https://user-images.githubusercontent.com/39348633/92987692-7abb9780-f48a-11ea-9370-aeb466b43597.png)
+
+Interfacing the joystick isn't difficult at all, is the most reliable way to control the wheelchair and will be the primary method of controlling the wheelchair
+
+With the MPU-9250, my intention is to use Machine Learning (ML) and different gestures to control the wheelchair. 
+
+However implimenting ML isn't going to be easy. 
+
+To make things worse (Or at least that's how I see it) Tensorflow JUST started supporting machine learning for microcontrollers.
+
+Why am I throwing shade at what seems like an awesome thing?
+
+There's hardley any documentation/support for the various supported microcontrollers because all of this is so new.
+
+So essentially, I'm almost starting back at square one considering my circumstances since the last update from 6/22 to now.
+
+Then there's the 3d-printing aspect of the entire project that I have to worry about.
+
+And to be honest, at this point, in addition to all the things going on in my personal life, I feel pretty shitty on how things have turned out so far.
+
+But I know that there's a demograph of people that could benefit from this, or a handful of people that could take this project and further refine it.
+
+There's also a person since day 1 of me stepping into the engineering world who has supported me the entire way and my life would probably be very different had we not crossed paths.
+
+And there's no way I can let him down.
+
+If any sigificant progress is made, I'll update this accordingly.
+
+But in the mean time, it's all up hill from here, and it's a steep incline.
 
 # **IMPORTANT NOTE [6/22/2020]** <h1>
-
 
 I recently had to do a factory reset on my laptop and lost the majority of my files in the process.
 
